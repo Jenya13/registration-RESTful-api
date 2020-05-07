@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 // Definition of user schema
 const userSchema = new mongoose.Schema({
@@ -10,14 +11,14 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    trim: true,
-    unique: true,
     required: [true, 'Email was not provided'],
+    unique: true,
+    validate: [validator.isEmail, 'Wrong email'],
+    trim: true,
     lowercase: true,
   },
   password: {
     type: String,
-    trim: true,
     required: [true, 'Password was not provided'],
     minlength: [6, 'Password is too short, must be at least 6 characters'],
     select: false,
