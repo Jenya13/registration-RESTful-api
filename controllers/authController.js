@@ -2,6 +2,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const User = require('./../models/User');
 const jwt = require('jsonwebtoken');
+const util = require('util');
 
 exports.register = catchAsync(async (req, res, next) => {
   const { name, email, bio, password } = req.body;
@@ -44,4 +45,18 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.auth = catchAsync();
+exports.auth = catchAsync(async (req, res, next) => {
+  const token = req.header('x-auth-token');
+
+  if (!token) return next(new AppError('No token, authorization denied', 401));
+
+  const decoded = util.promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  const user = User.findOne(decoded.id);
+
+  if (!user) return next(new AppError('User does not exist', 401));
+
+  req.user = user;
+
+  next();
+});
