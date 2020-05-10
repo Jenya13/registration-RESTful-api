@@ -5,11 +5,10 @@ const jwt = require('jsonwebtoken');
 const util = require('util');
 
 exports.register = catchAsync(async (req, res, next) => {
-  const { name, email, bio, password } = req.body;
+  const { name, email, password } = req.body;
   const user = await User.create({
     name,
     email,
-    bio,
     password,
   });
 
@@ -48,14 +47,22 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.auth = catchAsync(async (req, res, next) => {
   const token = req.header('x-auth-token');
 
-  if (!token) return next(new AppError('No token, authorization denied', 401));
+  if (!token) {
+    return next(new AppError('No token, authorization denied', 401));
+  }
 
-  const decoded = util.promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const decoded = await util.promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
 
-  const user = User.findOne(decoded.id);
+  const user = await User.findById(decoded.id);
+  console.log('in auth');
+  console.log(`${decoded.id}`);
 
-  if (!user) return next(new AppError('User does not exist', 401));
-
+  if (!user) {
+    return next(new AppError('User does not exist', 401));
+  }
   req.user = user;
 
   next();

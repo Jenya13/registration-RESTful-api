@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
     select: false,
   },
   avatar: {
-    type: String,
+    type: Buffer,
   },
   bio: {
     type: String,
