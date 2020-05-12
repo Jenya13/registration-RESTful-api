@@ -4,6 +4,14 @@ const catchAsync = require('./../utils/catchAsync');
 const multer = require('multer');
 const sharp = require('sharp');
 
+const updateUserData = async (id, data) => {
+  await User.findOneAndUpdate(
+    { _id: id },
+    { $set: data },
+    { new: true, runValidators: true }
+  );
+};
+
 exports.upload = multer({
   limits: {
     fileSize: 2000000,
@@ -17,17 +25,34 @@ exports.upload = multer({
   },
 });
 
-exports.getUser = catchAsync(async (req, res, next) => {});
+exports.getBio = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
 
-exports.deleteUser = catchAsync(async (req, res, next) => {});
+  if (!user || !user.bio) {
+    return next(new AppError('There are no user or biography', 404));
+  }
 
-exports.getBio = catchAsync(async (req, res, next) => {});
+  const bio = user.bio;
 
-exports.setBio = catchAsync(async (req, res, next) => {});
+  res.status(200).json({
+    status: 'success',
+    bio,
+  });
+});
 
-exports.updateBio = catchAsync(async (req, res, next) => {});
+exports.updateBio = catchAsync(async (req, res, next) => {
+  const bio = req.body.bio;
 
-exports.deleteBio = catchAsync(async (req, res, next) => {});
+  updateUserData(req.user.id, { bio: bio });
+
+  res.status(200).json({});
+});
+
+exports.deleteBio = catchAsync(async (req, res, next) => {
+  req.user.bio = undefined;
+  await req.user.save();
+  res.status(204).json({});
+});
 
 exports.getAvatar = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
@@ -45,15 +70,7 @@ exports.updateAvatar = catchAsync(async (req, res, next) => {
     .png()
     .toBuffer();
 
-  const user = await User.findById(req.user.id);
-
-  //   console.log(req.user);
-
-  await User.findOneAndUpdate(
-    { _id: req.user.id },
-    { $set: { avatar: buffer } },
-    { new: true, runValidators: true }
-  );
+  updateUserData(req.user.id, { avatar: buffer });
 
   res.status(200).json({});
 });
@@ -63,3 +80,7 @@ exports.deleteAvatar = catchAsync(async (req, res, next) => {
   await req.user.save();
   res.status(204).json({});
 });
+
+exports.getUser = catchAsync(async (req, res, next) => {});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {});

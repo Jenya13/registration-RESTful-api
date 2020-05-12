@@ -57,8 +57,6 @@ exports.auth = catchAsync(async (req, res, next) => {
   );
 
   const user = await User.findById(decoded.id);
-  console.log('in auth');
-  console.log(`${decoded.id}`);
 
   if (!user) {
     return next(new AppError('User does not exist', 401));

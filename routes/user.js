@@ -4,7 +4,6 @@ const {
   getUser,
   deleteUser,
   getBio,
-  setBio,
   updateBio,
   deleteBio,
   getAvatar,
@@ -16,17 +15,13 @@ const {
 router
   .route('/me/avatar')
   .post(auth, upload.single('avatar'), updateAvatar)
-
   .delete(auth, deleteAvatar);
 
 router.route('/users/:id/avatar').get(auth, getAvatar);
 
-router
-  .route('/me/bio')
-  .get(auth, getBio)
-  .post(auth, setBio)
-  .patch(auth, updateBio)
-  .delete(auth, deleteBio);
+router.route('/users/:id/bio').get(auth, getBio);
+
+router.route('/me/bio').post(auth, updateBio).delete(auth, deleteBio);
 
 router.route('/:id').get(auth, getUser).delete(auth, deleteUser);
 
