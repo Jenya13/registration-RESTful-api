@@ -23,6 +23,6 @@ router.route('/users/:id/bio').get(auth, getBio);
 
 router.route('/me/bio').post(auth, updateBio).delete(auth, deleteBio);
 
-router.route('/:id').get(auth, getUser).delete(auth, deleteUser);
+router.route('/').get(auth, getUser).delete(auth, deleteUser);
 
 module.exports = router;

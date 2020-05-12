@@ -81,6 +81,16 @@ exports.deleteAvatar = catchAsync(async (req, res, next) => {
   res.status(204).json({});
 });
 
-exports.getUser = catchAsync(async (req, res, next) => {});
+exports.getUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('-password ');
+  res.status(200).json({
+    status: 'success',
+    user,
+  });
+});
 
-exports.deleteUser = catchAsync(async (req, res, next) => {});
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  await User.findOneAndRemove({ _id: req.user.id });
+
+  res.status(204).json({});
+});
