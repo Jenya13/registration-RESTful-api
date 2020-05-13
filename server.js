@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const userRoute = require('./routes/user');
 const authRoute = require('./routes/auth');
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
@@ -18,11 +20,9 @@ if (process.env.NODE_ENV === 'development') {
 app.use(userRoute);
 app.use(authRoute);
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    message: `Can't find ${req.originalUrl}`,
-  });
+  next(new AppError(`Can't find ${req.originalUrl} on the server`, 404));
 });
+app.use(globalErrorHandler);
 
 const db = process.env.DATABASE_LOCAL;
 mongoose
