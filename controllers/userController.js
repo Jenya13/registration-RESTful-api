@@ -20,7 +20,6 @@ exports.upload = multer({
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
       return cb(new AppError('inncorect file formate', 400));
     }
-    // File must be an image
     cb(undefined, true);
   },
 });

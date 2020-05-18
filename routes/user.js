@@ -1,5 +1,9 @@
 const router = require('express').Router();
-const { auth } = require('./../controllers/authController');
+const {
+  auth,
+  forgotPassword,
+  resetPassword,
+} = require('./../controllers/authController');
 const {
   getUser,
   deleteUser,
@@ -9,8 +13,12 @@ const {
   getAvatar,
   updateAvatar,
   deleteAvatar,
+
   upload,
 } = require('./../controllers/userController');
+
+router.post('/forgotPassword', forgotPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
 router
   .route('/me/avatar')
